@@ -1,19 +1,27 @@
-# app/Dockerfile
+FROM python:3.8-slim
 
-FROM python:3.9-slim
+# Install system packages and dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    python3-pip \
+    nginx \
+  && rm -rf /var/lib/apt/lists/*
 
-EXPOSE 8501
-
+# Set the working directory
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    software-properties-common \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+# Copy the requirements file and install the requirements
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN git clone https://github.com/streamlit/streamlit-example.git .
+# Copy the application code
+COPY . .
 
-RUN pip3 install -r requirements.txt
+# Expose the port that gunicorn will listen on
+EXPOSE 8000
 
-ENTRYPOINT ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Run the gunicorn server to serve the app
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:server"]
