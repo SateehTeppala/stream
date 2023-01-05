@@ -1,8 +1,12 @@
-from flask import Flask
+import streamlit as st
+import pandas as pd
+import numpy as np
 
-app = Flask(__name__)
+import pandas as pd
+import numpy as np
 
+chart_data = pd.DataFrame(
+    np.random.randn(20, 3),
+    columns=['a', 'b', 'c'])
 
-@app.route("/")
-def home():
-    return "<h2>Flask Vercel</h2>"
+st.line_chart(chart_data)
