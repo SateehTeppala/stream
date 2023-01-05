@@ -24,4 +24,5 @@ COPY . .
 EXPOSE 8000
 
 # Run the gunicorn server to serve the app
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:server"]
+CMD ["/bin/sh","gunicorn", "--bind", "0.0.0.0:8000", "wsgi:server"]
+
