@@ -16,6 +16,7 @@ WORKDIR /app
 # Copy the requirements file and install the requirements
 COPY requirements.txt .
 RUN pip install -r requirements.txt
+RUN pip install gunicorn
 
 # Copy the application code
 COPY . .
@@ -24,5 +25,5 @@ COPY . .
 EXPOSE 8000
 
 # Run the gunicorn server to serve the app
-CMD ["/bin/sh","gunicorn", "--bind", "0.0.0.0:8000", "wsgi:server"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "wsgi:server"]
 
