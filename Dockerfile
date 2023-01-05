@@ -1,35 +1,19 @@
-FROM python:3.9
+# app/Dockerfile
 
-RUN pip install virtualenv
-ENV VIRTUAL_ENV=/venv
-RUN virtualenv venv -p python3
-ENV PATH="VIRTUAL_ENV/bin:$PATH"
+FROM python:3.9-slim
+
+EXPOSE 8501
 
 WORKDIR /app
-ADD . /app
 
-# Install dependencies
-RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    software-properties-common \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
-# copying all files over
-COPY . /app
+RUN git clone https://github.com/streamlit/streamlit-example.git .
 
-# Expose port
-ENV PORT 8501
+RUN pip3 install -r requirements.txt
 
-# cmd to launch app when container is run
-CMD streamlit run demo.py
-
-# streamlit-specific commands for config
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
-RUN mkdir -p /root/.streamlit
-RUN bash -c 'echo -e "\
-[general]\n\
-email = \"\"\n\
-" > /root/.streamlit/credentials.toml'
-
-RUN bash -c 'echo -e "\
-[server]\n\
-enableCORS = false\n\
-" > /root/.streamlit/config.toml'
+ENTRYPOINT ["streamlit", "run", "streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
